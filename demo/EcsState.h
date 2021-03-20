@@ -21,26 +21,33 @@ source distribution.
 
 #pragma once
 
-#include "robot2D/Graphics/Transformable.h"
+#include "robot2D/Util/ResourceHandler.h"
+#include "robot2D/Core/IStateMachine.h"
+#include "robot2D/Core/State.h"
 #include "robot2D/Graphics/Sprite.h"
+#include "ecs/MessageBus.h"
+#include "ecs/Scene.h"
 
-namespace ecs{
-    class TransformComponent final: public robot2D::Transformable{
-    public:
-        TransformComponent();
-        ~TransformComponent() override = default;
+class EcsState: public robot2D::State{
+public:
+    using Ptr = std::shared_ptr<EcsState>;
+public:
+    EcsState(robot2D::IStateMachine& machine);
+    ~EcsState()override = default;
 
-    };
 
-    class SpriteComponent final{
-    public:
-        SpriteComponent();
-        ~SpriteComponent() = default;
+    void handleEvents(const robot2D::Event &event) override;
+    void update(float dt) override;
+    void render() override;
 
-        void setTexture(const robot2D::Texture& texture);
-        robot2D::Texture& getTexture();
-        const robot2D::Texture& getTexture() const;
-    private:
-        const robot2D::Texture* m_texture;
-    };
-}
+private:
+    //demo mode
+    void handleMessages(const ecs::Message& message);
+
+    void setup();
+    void setup_ecs();
+private:
+    ecs::MessageBus m_bus;
+    ecs::Scene m_scene;
+    robot2D::ResourceHandler<robot2D::Texture> m_textures;
+};

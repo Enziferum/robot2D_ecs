@@ -74,6 +74,8 @@ namespace logger {
 }
 
 
+#define LOG_ERROR_E(msg, ...) logger::log(logger::logType::error, msg, #__VA_ARGS__);
 #define LOG_ERROR(msg, ...) logger::log(logger::logType::error, msg, __VA_ARGS__);
 #define LOG_WARN(msg, ...) logger::log(logger::logType::warn, msg, __VA_ARGS__);
 #define LOG_INFO(msg, ...) logger::log(logger::logType::info, msg, __VA_ARGS__);
+#define LOG_INFO_E(msg, ...) logger::log(logger::logType::info, msg, #__VA_ARGS__);

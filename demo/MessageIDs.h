@@ -19,23 +19,20 @@ and must not be misrepresented as being the original software.
 source distribution.
 *********************************************************************/
 
-#include "ecs/Components.h"
-#include "ecs/Robot.h"
-#include "ecs/RobotSystem.h"
+#pragma once
+#include <robot2D/Core/Vector2.h>
+#include "ecs/Message.h"
 
-RobotSystem::RobotSystem() {
-    check_component<ecs::TransformComponent>();
-    check_component<Robot>();
-}
+enum messageIDS {
+    robotDemo = ecs::Message::Count
+};
 
-void RobotSystem::process(float dt) {
-    auto& entities = getEntites();
-    for(auto& it: entities) {
-        auto &transform = it.getComponent<ecs::TransformComponent>();
-        transform.move(robot2D::vec2f(10.f * dt, 0.f));
-    }
-}
+struct robotDemoEvent{
+    enum Status{
+        alive = 0,
+        dead
+    };
 
-void RobotSystem::on_addEntity(ecs::Entity entity) {
-    System::on_addEntity(entity);
-}
+    Status status;
+    robot2D::vec2f pos;
+};

@@ -25,14 +25,16 @@ source distribution.
 
 #include "ComponentID.h"
 #include "Entity.h"
+#include "MessageBus.h"
 
 namespace ecs{
     class Scene;
     class System{
     public:
-        System();
+        System(MessageBus& messageBus);
         virtual ~System() = 0;
 
+        virtual void handleMessage(const Message& message);
         virtual void process(float dt);
         void setActive(const bool& status);
 
@@ -43,6 +45,9 @@ namespace ecs{
         //check required components
         template<typename T>
         void check_component();
+
+        template<typename T>
+        T* postMessage(Message::ID);
 
         std::vector<Entity>& getEntites();
 
@@ -56,7 +61,9 @@ namespace ecs{
         void processComponents(ComponentID& manager);
     protected:
         Scene* m_scene;
+        MessageBus& m_bus;
     private:
+
         friend class Scene;
         friend class SystemManager;
         using Ptr = std::unique_ptr<System>;
@@ -83,19 +90,6 @@ namespace ecs{
         Scene& m_scene;
     };
 
-    template<typename T>
-    void System::check_component() {
-        auto id = std::type_index(typeid(T));
-        m_checkComponents.push_back(id);
-    }
-
-    template<typename T, typename... Args>
-    T& SystemManager::addSystem(Args &&... args) {
-        auto& system = m_systems.emplace_back(
-                std::make_unique<T>(std::forward<Args>(args)...));
-
-        return *(dynamic_cast<T*>(m_systems.back().get()));
-    }
-
+#include "System.inl"
 }
 

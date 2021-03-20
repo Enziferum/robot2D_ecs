@@ -31,11 +31,10 @@ namespace ecs{
 
     class SpriteRenderSystem: public System, public robot2D::Drawable{
     public:
-        SpriteRenderSystem();
+        SpriteRenderSystem(MessageBus& messageBus);
         ~SpriteRenderSystem()override = default;
 
         void process(float dt) override;
-        virtual void debug();
     protected:
         void on_addEntity(Entity entity) override;
 

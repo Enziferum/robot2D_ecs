@@ -116,7 +116,7 @@ namespace ecs{
 
     class EntityManager{
     public:
-        EntityManager();
+        EntityManager(ComponentID& );
         EntityManager(const EntityManager&) = delete;
         EntityManager(const EntityManager&&) = delete;
         EntityManager& operator=(const EntityManager&) = delete;
@@ -152,7 +152,7 @@ namespace ecs{
         ComponentContainer<T>& getContainer();
     private:
         u8 m_entitiesCount;
-        ComponentID m_componentManager;
+        ComponentID& m_componentManager;
         std::vector<Container::Ptr> m_containers;
         std::vector<component_mask> m_masks;
     };

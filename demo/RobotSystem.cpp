@@ -1,7 +1,7 @@
 /*********************************************************************
 (c) Alex Raag 2021
 https://github.com/Enziferum
-robot2D_game - Zlib license.
+robot2D_ecs - Zlib license.
 This software is provided 'as-is', without any express or
 implied warranty. In no event will the authors be held
 liable for any damages arising from the use of this software.
@@ -19,30 +19,31 @@ and must not be misrepresented as being the original software.
 source distribution.
 *********************************************************************/
 
-#pragma once
-
-#include "robot2D/Util/ResourceHandler.h"
-#include "robot2D/Core/IStateMachine.h"
-#include "robot2D/Core/State.h"
-#include "robot2D/Graphics/Sprite.h"
-#include "Scene.h"
-
-class EcsState: public robot2D::State{
-public:
-    using Ptr = std::shared_ptr<EcsState>;
-public:
-    EcsState(robot2D::IStateMachine& machine);
-    ~EcsState()override = default;
+#include "ecs/Components.h"
+#include "MessageIDs.h"
+#include "Robot.h"
+#include "RobotSystem.h"
 
 
-    void handleEvents(const robot2D::Event &event) override;
-    void update(float dt) override;
-    void render() override;
 
-private:
-    void setup();
-    void setup_ecs();
-private:
-    ecs::Scene m_scene;
-    robot2D::ResourceHandler<robot2D::Texture> m_textures;
-};
+RobotSystem::RobotSystem(ecs::MessageBus& messageBus): System(messageBus) {
+    check_component<ecs::TransformComponent>();
+    check_component<Robot>();
+}
+
+void RobotSystem::process(float dt) {
+    auto& entities = getEntites();
+    for(auto& it: entities) {
+        auto& transform = it.getComponent<ecs::TransformComponent>();
+        transform.move(robot2D::vec2f(10.f * dt, 0.f));
+        if(transform.getPosition().x >= 200.f){
+            auto* msg = postMessage<robotDemoEvent>(robotDemo);
+            msg -> status = robotDemoEvent::alive;
+            msg -> pos = transform.getPosition();
+        }
+    }
+}
+
+void RobotSystem::on_addEntity(ecs::Entity entity) {
+    System::on_addEntity(entity);
+}

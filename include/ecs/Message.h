@@ -1,7 +1,7 @@
 /*********************************************************************
 (c) Alex Raag 2021
 https://github.com/Enziferum
-robot2D_game - Zlib license.
+robot2D_ecs - Zlib license.
 This software is provided 'as-is', without any express or
 implied warranty. In no event will the authors be held
 liable for any damages arising from the use of this software.
@@ -21,26 +21,40 @@ source distribution.
 
 #pragma once
 
-#include "robot2D/Graphics/Transformable.h"
-#include "robot2D/Graphics/Sprite.h"
+#include <cassert>
+#include <cstdint>
 
-namespace ecs{
-    class TransformComponent final: public robot2D::Transformable{
+namespace ecs {
+    class Message {
     public:
-        TransformComponent();
-        ~TransformComponent() override = default;
+        Message() :
+                m_buffer(nullptr),
+                m_buffer_sz(0) {}
 
-    };
+        ~Message() = default;
 
-    class SpriteComponent final{
-    public:
-        SpriteComponent();
-        ~SpriteComponent() = default;
+        using ID = int32_t;
 
-        void setTexture(const robot2D::Texture& texture);
-        robot2D::Texture& getTexture();
-        const robot2D::Texture& getTexture() const;
+        enum Type {
+            WindowMessage = 0,
+            Count
+        };
+
+        //todo structs of default Messages
+
+        ID id = -1;
+
+        template<typename T>
+        const T &unpack() const {
+            assert(sizeof(T) == m_buffer_sz);
+            return *static_cast<T *>(m_buffer);
+        }
+
     private:
-        const robot2D::Texture* m_texture;
+        friend class MessageBus;
+
+        void *m_buffer;
+        unsigned int m_buffer_sz;
     };
 }
+

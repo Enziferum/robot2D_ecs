@@ -27,17 +27,19 @@ source distribution.
 
 #include "robot2D/Graphics/Drawable.h"
 #include "robot2D/Core/Event.h"
+
 #include "Logger.h"
 #include "Entity.h"
 #include "System.h"
+#include "MessageBus.h"
 
 namespace ecs {
     class Scene: public robot2D::Drawable {
     public:
-        Scene();
+        Scene(MessageBus& messageBus);
         ~Scene() = default;
 
-
+        void forwardMessage(const ecs::Message& );
         void forwardEvent(const robot2D::Event& event);
         void update(float dt);
 
@@ -51,13 +53,14 @@ namespace ecs {
         //ecs part //
 
 
-
     protected:
         virtual void draw(robot2D::RenderTarget& target,
                           robot2D::RenderStates state) const override;
 
 
     private:
+        MessageBus& m_bus;
+
         EntityManager m_entityManager;
         ComponentID m_componentManager;
 
@@ -68,18 +71,6 @@ namespace ecs {
         std::function<void(robot2D::RenderTarget&, robot2D::RenderStates)> m_renderPath;
     };
 
-    template<typename T, typename... Args>
-    T& Scene::addSystem(Args&&... args) {
-        //auto& system = m_systemManager.addSystem<T>(std::forward<Args>(args)...);
+#include "Scene.inl"
 
-        auto& system = m_systems.emplace_back(std::make_unique<T>(std::forward<Args>(args)...));
-        system -> m_scene = this;
-        system -> processComponents(m_componentManager);
-
-        if constexpr (std::is_base_of<robot2D::Drawable, T>::value){
-            m_drawables.push_back(dynamic_cast<robot2D::Drawable*>(system.get()));
-        }
-
-        return *dynamic_cast<T*>(m_systems.back().get());
-    }
 }

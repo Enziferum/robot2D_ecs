@@ -20,16 +20,55 @@ source distribution.
 *********************************************************************/
 
 #pragma once
+#include <vector>
+#include "Message.h"
 
-#include "System.h"
+namespace ecs {
+    class MessageBus {
+    public:
+        MessageBus();
 
-class RobotSystem: public ecs::System{
-public:
-    RobotSystem();
+        ~MessageBus() = default;
+
+        const Message &poll();
+
+        template<typename T>
+        T *post(Message::ID id);
+
+        std::size_t bus_size() const;
+
+        bool empty();
+
+    private:
+        //out buffers
+        std::vector<char> in_buffer;
+        std::vector<char> out_buffer;
+
+        char *in_ptr;
+        char *out_ptr;
+
+        unsigned int wait_count;
+        unsigned int current_count;
+    };
+
+    template<typename T>
+    T* MessageBus::post(Message::ID id) {
+        //alloc buffer
+        assert(sizeof(T) < 128);
+        //alloc not from buffer
+        auto msg = new (in_ptr)Message();
+        in_ptr += sizeof(Message);
+        //need to store in memory block
+        msg -> id = id;
+        msg -> m_buffer_sz = sizeof(T);
+        msg -> m_buffer = new (in_ptr)T();
+        in_ptr += msg->m_buffer_sz;
+        ++wait_count;
+        return static_cast<T*>(msg-> m_buffer);
+    }
+
+}
 
 
-    void process(float dt) override;
 
-protected:
-    void on_addEntity(ecs::Entity entity) override;
-};
+

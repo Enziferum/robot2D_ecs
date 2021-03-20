@@ -1,7 +1,7 @@
 /*********************************************************************
 (c) Alex Raag 2021
 https://github.com/Enziferum
-robot2D_game - Zlib license.
+robot2D_ecs - Zlib license.
 This software is provided 'as-is', without any express or
 implied warranty. In no event will the authors be held
 liable for any damages arising from the use of this software.
@@ -19,30 +19,45 @@ and must not be misrepresented as being the original software.
 source distribution.
 *********************************************************************/
 
-#include "ecs/Components.h"
+#include "ecs/MessageBus.h"
 
-namespace ecs{
+namespace ecs {
+    namespace {
+        //11 mb of memory
+        constexpr auto memory_sz = 1048576u;
+    }
 
-    TransformComponent::TransformComponent() {
+    MessageBus::MessageBus() :
+            in_buffer(memory_sz),
+            out_buffer(memory_sz),
+            in_ptr(out_buffer.data()),
+            out_ptr(in_buffer.data()),
+            current_count(0),
+            wait_count(0) {
 
     }
 
-
-    SpriteComponent::SpriteComponent() {
-
+    const Message &MessageBus::poll() {
+        const Message &msg = *reinterpret_cast<Message *>(out_ptr);
+        //move pointer to next message
+        out_ptr += (msg.m_buffer_sz + sizeof(Message));
+        --current_count;
+        return msg;
     }
 
-    void SpriteComponent::setTexture(const robot2D::Texture &texture) {
-        m_texture = &texture;
+    std::size_t MessageBus::bus_size() const {
+        return wait_count;
     }
 
-    robot2D::Texture &SpriteComponent::getTexture() {
-        return const_cast<robot2D::Texture &>(*m_texture);
+    bool MessageBus::empty() {
+        if (current_count == 0) {
+            in_buffer.swap(out_buffer);
+            in_ptr = out_buffer.data();
+            out_ptr = in_buffer.data();
+            current_count = wait_count;
+            wait_count = 0;
+            return true;
+        }
+        return false;
     }
-
-    const robot2D::Texture &SpriteComponent::getTexture() const {
-        return *m_texture;
-    }
-
-
 }

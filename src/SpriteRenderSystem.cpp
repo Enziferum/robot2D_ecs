@@ -19,8 +19,6 @@ and must not be misrepresented as being the original software.
 source distribution.
 *********************************************************************/
 
-#include <iostream>
-
 #include "robot2D/Graphics/RenderTarget.h"
 #include "robot2D/Graphics/Transformable.h"
 
@@ -30,14 +28,12 @@ source distribution.
 
 namespace ecs{
 
-    SpriteRenderSystem::SpriteRenderSystem() {
+    SpriteRenderSystem::SpriteRenderSystem(MessageBus& messageBus):
+    System(messageBus) {
         check_component<TransformComponent>();
         check_component<SpriteComponent>();
     }
 
-    void SpriteRenderSystem::debug() {
-        std::cout << "SpriteRenderSystem is part of scene now" <<std::endl;
-    }
 
     void SpriteRenderSystem::process(float dt) {
         auto& entities = getEntites();
@@ -64,6 +60,4 @@ namespace ecs{
         }
 
     }
-
-
 }

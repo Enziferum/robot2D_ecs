@@ -25,8 +25,11 @@ source distribution.
 #include "ecs/Logger.h"
 
 namespace ecs{
-    Scene::Scene():
-    m_systemManager(*this)
+    Scene::Scene(MessageBus& messageBus):
+    m_bus(messageBus),
+    m_systemManager(*this),
+    m_componentManager(),
+    m_entityManager(m_componentManager)
     {
         m_renderPath = [this](robot2D::RenderTarget& target,
                 robot2D::RenderStates states){
@@ -44,8 +47,20 @@ namespace ecs{
 
     }
 
-    void Scene::forwardEvent(const robot2D::Event& event) {
+    void Scene::forwardMessage(const Message& message) {
+        //todo process engine states
+        if(message.id == Message::WindowMessage){
+            //pack from
+        }
 
+        for(auto& it:m_systems){
+            if(it->m_active)
+                it->handleMessage(message);
+        }
+    }
+
+
+    void Scene::forwardEvent(const robot2D::Event& event) {
     }
 
     void Scene::update(float dt) {
@@ -76,5 +91,6 @@ namespace ecs{
     void Scene::draw(robot2D::RenderTarget& target, robot2D::RenderStates states) const {
        m_renderPath(target, states);
     }
+
 
 }

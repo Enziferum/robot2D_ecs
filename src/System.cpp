@@ -22,7 +22,8 @@ source distribution.
 #include "ecs/System.h"
 
 namespace ecs{
-    System::System():
+    System::System(MessageBus& messageBus):
+        m_bus(messageBus),
         m_active(true),
         m_scene(nullptr) {
 
@@ -63,6 +64,10 @@ namespace ecs{
         for(auto& it: m_checkComponents)
             m_mask.set(manager.getIDFromType(it));
         m_checkComponents.clear();
+    }
+
+    void System::handleMessage(const Message &message) {
+
     }
 
 

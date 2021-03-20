@@ -35,7 +35,9 @@ namespace ecs{
 
     constexpr u8 max_components = 128;
 
-    EntityManager::EntityManager(): m_entitiesCount(0),
+    EntityManager::EntityManager(ComponentID& manager):
+    m_componentManager(manager),
+    m_entitiesCount(0),
     m_masks(max_components),
     m_containers(max_components)
     {
