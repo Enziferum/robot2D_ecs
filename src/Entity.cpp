@@ -35,7 +35,8 @@ namespace ecs{
 
     constexpr u8 max_components = 128;
 
-    EntityManager::EntityManager(ComponentID& manager):
+    EntityManager::EntityManager(MessageBus& messageBus, ComponentID& manager):
+    m_bus(messageBus),
     m_componentManager(manager),
     m_entitiesCount(0),
     m_masks(max_components),
@@ -54,15 +55,10 @@ namespace ecs{
 
     void EntityManager::destroyEntity(Entity entity) {
         const auto index = entity.get_index();
-//        auto found = std::find_if(m_entites.begin(), m_entites.end(),[=](Entity ent){
-//           return ent.get_index() == index;
-//        });
-//        //nothing to delete make warn
-//        if(found == m_entites.end()){
-//            return;
-//        }
-        //in the end
+        //assert size
+        m_containers[index] -> clear();
         --m_entitiesCount;
+        m_bus.post<Message::DestroyedEntity>(Message::EntityDestroyed);
     }
 
     const u8 &EntityManager::get_size() const {

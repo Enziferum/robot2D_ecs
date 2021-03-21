@@ -37,10 +37,17 @@ namespace ecs {
 
         enum Type {
             WindowMessage = 0,
+            EntityDestroyed = 1,
             Count
         };
 
-        //todo structs of default Messages
+        struct WindowEvent{
+
+        };
+
+        struct DestroyedEntity{
+            unsigned int index;
+        };
 
         ID id = -1;
 

@@ -54,7 +54,7 @@ namespace ecs{
 
             states.transform *= transform.getTransform();
             states.texture = &sprite.getTexture();
-            states.color = robot2D::Color::White;
+            states.color = sprite.getColor();
 
             target.draw(states);
         }

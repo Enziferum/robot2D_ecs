@@ -38,8 +38,6 @@ namespace ecs{
         virtual void process(float dt);
         void setActive(const bool& status);
 
-
-        //get mask of system
     protected:
         virtual void on_addEntity(Entity entity);
         //check required components

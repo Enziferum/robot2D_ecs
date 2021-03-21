@@ -29,6 +29,7 @@ source distribution.
 
 #include "Container.h"
 #include "ComponentID.h"
+#include "MessageBus.h"
 
 namespace ecs{
     using u8 = unsigned int;
@@ -116,7 +117,7 @@ namespace ecs{
 
     class EntityManager{
     public:
-        EntityManager(ComponentID& );
+        EntityManager(MessageBus&, ComponentID&);
         EntityManager(const EntityManager&) = delete;
         EntityManager(const EntityManager&&) = delete;
         EntityManager& operator=(const EntityManager&) = delete;
@@ -151,6 +152,7 @@ namespace ecs{
         template<typename T>
         ComponentContainer<T>& getContainer();
     private:
+        MessageBus& m_bus;
         u8 m_entitiesCount;
         ComponentID& m_componentManager;
         std::vector<Container::Ptr> m_containers;

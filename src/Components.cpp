@@ -28,7 +28,8 @@ namespace ecs{
     }
 
 
-    SpriteComponent::SpriteComponent() {
+    SpriteComponent::SpriteComponent():
+        m_color(robot2D::Color::White) {
 
     }
 
@@ -42,6 +43,14 @@ namespace ecs{
 
     const robot2D::Texture &SpriteComponent::getTexture() const {
         return *m_texture;
+    }
+
+    void SpriteComponent::setColor(const robot2D::Color& color) {
+        m_color = color;
+    }
+
+    const robot2D::Color &SpriteComponent::getColor() const {
+        return m_color;
     }
 
 

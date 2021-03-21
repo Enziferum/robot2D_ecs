@@ -41,8 +41,5 @@ namespace ecs{
     private:
         void draw(robot2D::RenderTarget &target,
                   robot2D::RenderStates states) const override;
-
-    private:
-
     };
 }

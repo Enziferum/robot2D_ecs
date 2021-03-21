@@ -58,11 +58,6 @@ void EcsState::setup() {
 }
 
 void EcsState::setup_ecs() {
-    //base system to render sprites
-
-    // concept entites to be render by spritesystem should have
-    // component SpriteRender and TransformComponent
-
     m_scene.addSystem<ecs::SpriteRenderSystem>(m_bus);
     m_scene.addSystem<RobotSystem>(m_bus);
 
